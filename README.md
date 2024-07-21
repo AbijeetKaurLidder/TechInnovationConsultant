@@ -1,42 +1,40 @@
-# Customized-LLM-APP
+Tech Innovation Consultant Chatbot
 
-Building a Retrieval-Augmented Generation (RAG) bot can significantly enhance the capabilities of a language model by incorporating external knowledge to generate more accurate and contextually relevant responses. This guide will walk you through creating a simple RAG bot using Gradio and the Hugging Face APIs.
+A guideline to build a no-cost LLM chatbot
 
-But how does RAG enhance LLM’s performance?
+This README provides a structured and detailed guide to help users through the process of creating and deploying a customized Tech Innovation Consultant chatbot using Hugging Face Spaces and Gradio, highlighting key steps and customization options, complete with useful links for easy navigation.
 
-RAG improves the performance of language models by augmenting them with external documents. This method retrieves relevant documents based on the user query and combines them with the original prompt before passing them to the language model for response generation. This approach ensures that the language model can access up-to-date and domain-specific information without the need for extensive retraining.
+Build and Deploy Your Custom Tech Innovation Consultant App in 5 Minutes for Free
+Introduction
+Have you ever wished to craft a chatbot tailored to guide you in the realm of technology innovation? Whether it's advice on the latest tech trends, guidance on implementing new technologies, or insights into the future of tech, this comprehensive guide is your gateway. We'll walk you through the simple steps to build and deploy your own LLM-based Tech Innovation Consultant chatbot using Hugging Face Spaces and Gradio—all in just five minutes, and absolutely free of charge!
 
+Prerequisites
+Before you start creating your chatbot, make sure you have the following:
 
+A Hugging Face Account: Essential for accessing the platform where you'll build and host your chatbot. Sign up here.
+Setup and Deployment
+Choosing Your Chatbot’s Identity: Decide that your chatbot will specialize as a "Tech Innovation Consultant". This role will define the interactions and capabilities of your chatbot.
 
-A common scenario of RAG helping LLM (Source)
+Logging into Hugging Face: You’ll need an account to access the tools required for deploying your chatbot. If you don't have an account, signing up is straightforward and quick.
 
-The basic steps in RAG can be simplified as follows:
+Navigating to Hugging Face Spaces: Spaces are where the magic happens. This section of Hugging Face allows users to create and manage their applications seamlessly. Navigate to Spaces to get started.
 
-Input: The question to which the LLM system responds is referred to as the input. If no RAG is used, the LLM is directly used to respond to the question.
+Creating Your Space: Initiate a new space by clicking on 'Create New Space'. It’s important that the name of your Space reflects the chatbot's role, as it helps in identifying the application’s purpose at a glance.
 
-Indexing: If RAG is used, then a series of related documents are indexed by chunking them first, generating embeddings of the chunks, and indexing them into a vector store. At inference, the query is also embedded in a similar way.
+Configuring Your Chatbot:
 
+Selecting the Framework and Model: Choose 'Gradio' as the framework for its user-friendly interface capabilities, and select a suitable model, such as 'Zephyr 7B', known for its versatility across various tasks.
+Customization: Personalize the chatbot to interact as a Tech Innovation Consultant. Tailor system messages and interaction style to provide tech advice, insights into the latest innovations, and guidance on implementing new technologies.
+Deployment: Once setup is complete, deploy your chatbot by simply clicking the create button. Deployment usually takes a couple of minutes. After this, your chatbot will be up and running and ready to interact.
+Customization Example
+To make your chatbot truly unique as a "Tech Innovation Consultant":
 
-Basic retrieval steps in RAG. (Source)
+Modify the system messages to include advice on the latest tech trends, tips for implementing new technologies, and insights into future tech developments.
+Program the chatbot to suggest innovative solutions, guide users through the process of adopting new technologies, or offer strategic insights into tech advancements.
+Explore different roles and tweak the system instructions to discover the full potential of your chatbot. Don’t forget to share your creations and experiences, as your insights could inspire others in their chatbot development.
 
-Retrieval: The relevant documents are obtained by comparing the query against the indexed vectors, also denoted as “Relevant Documents”.
+Contribution
+If you wish to contribute: Please fork this repo.
 
-Generation: The relevant documents are combined with the original prompt as additional context. The combined text and prompt are then passed to the model for response generation which is then prepared as the final output of the system to the user.
-
-In the example provided, using the model directly fails to respond to the question due to a lack of knowledge of current events. On the other hand, when using RAG, the system can pull the relevant information needed for the model to answer the question appropriately. (Source)
-
-Now Let’s Build a Chatbot using RAG:
-
-I have used Zephyr LLM model and all-MiniLM-L6-v2 sentence transformer model. This sentence-transformers model maps sentences & paragraphs to a 384 dimensional dense vector space and can be used for tasks like clustering or semantic search.
-
-The all-* models were trained on all available training data (more than 1 billion training pairs) and are designed as general purpose models. The all-mpnet-base-v2 model provides the best quality, while all-MiniLM-L6-v2 is 5 times faster and still offers good quality. Toggle All models to see all evaluated original models.
-
-We need the following ingredients:
-
-1. A PDF as your knowledgebase
-
-2. A requirements.txt file
-
-3. An app.py file
-
-4. An account on Hugging Face (See this blog to learn about building a LLM chatbot in Hugging Face)
+Contact
+For any questions, reach out to ab4368259@alphacollege.me
