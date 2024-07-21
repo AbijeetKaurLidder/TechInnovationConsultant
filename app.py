@@ -1,59 +1,17 @@
 import gradio as gr
 from huggingface_hub import InferenceClient
-from typing import List, Tuple
-import fitz  # PyMuPDF
-from sentence_transformers import SentenceTransformer, util
-import numpy as np
-import faiss
 
 client = InferenceClient("HuggingFaceH4/zephyr-7b-beta")
 
-# Placeholder for the app's state
-class MyApp:
-    def __init__(self) -> None:
-        self.documents = []
-        self.embeddings = None
-        self.index = None
-        self.load_pdf("THEDIA1.pdf")
-        self.build_vector_db()
-
-    def load_pdf(self, file_path: str) -> None:
-        """Extracts text from a PDF file and stores it in the app's documents."""
-        doc = fitz.open(file_path)
-        self.documents = []
-        for page_num in range(len(doc)):
-            page = doc[page_num]
-            text = page.get_text()
-            self.documents.append({"page": page_num + 1, "content": text})
-        print("PDF processed successfully!")
-
-    def build_vector_db(self) -> None:
-        """Builds a vector database using the content of the PDF."""
-        model = SentenceTransformer('all-MiniLM-L6-v2')
-        self.embeddings = model.encode([doc["content"] for doc in self.documents])
-        self.index = faiss.IndexFlatL2(self.embeddings.shape[1])
-        self.index.add(np.array(self.embeddings))
-        print("Vector database built successfully!")
-
-    def search_documents(self, query: str, k: int = 3) -> List[str]:
-        """Searches for relevant documents using vector similarity."""
-        model = SentenceTransformer('all-MiniLM-L6-v2')
-        query_embedding = model.encode([query])
-        D, I = self.index.search(np.array(query_embedding), k)
-        results = [self.documents[i]["content"] for i in I[0]]
-        return results if results else ["No relevant documents found."]
-
-app = MyApp()
-
 def respond(
-    message: str,
-    history: List[Tuple[str, str]],
-    system_message: str,
-    max_tokens: int,
-    temperature: float,
-    top_p: float,
+    message,
+    history,
+    system_message,
+    max_tokens,
+    temperature,
+    top_p,
 ):
-    system_message = "You are a knowledgeable DBT coach. You always talk about one options at at a time. you add greetings and you ask questions like real counsellor. Remember you are helpful and a good listener. You are concise and never ask multiple questions, or give long response. You response like a human counsellor accurately and correctly. consider the users as your client. and practice verbal cues only where needed. Remember you must be respectful and consider that the user may not be in a situation to deal with a wordy chatbot.  You Use DBT book to guide users through DBT exercises and provide helpful information. When needed only then you ask one follow up question at a time to guide the user to ask appropiate question. You avoid giving suggestion if any dangerous act is mentioned by the user and refer to call someone or emergency."
+    system_message = "Welcome to the Tech Innovation Consultant! I'm here to provide insights and guidance on technology innovations, digital transformation strategies, future trends, and more. Whether you're looking for advice on emerging technologies, innovation frameworks, or business strategy in the digital age, feel free to ask. How can I assist you today?"
     messages = [{"role": "system", "content": system_message}]
 
     for val in history:
@@ -64,44 +22,49 @@ def respond(
 
     messages.append({"role": "user", "content": message})
 
-    # RAG - Retrieve relevant documents
-    retrieved_docs = app.search_documents(message)
-    context = "\n".join(retrieved_docs)
-    messages.append({"role": "system", "content": "Relevant documents: " + context})
-
     response = ""
+
     for message in client.chat_completion(
         messages,
-        max_tokens=100,
+        max_tokens=max_tokens,
         stream=True,
-        temperature=0.98,
-        top_p=0.7,
+        temperature=temperature,
+        top_p=top_p,
     ):
         token = message.choices[0].delta.content
+
         response += token
         yield response
 
-demo = gr.Blocks()
-
-with demo:
-    gr.Markdown(
-        "‼️Disclaimer: This chatbot is based on a DBT exercise book that is publicly available. and just to test RAG implementation.‼️"
-    )
-    
-    chatbot = gr.ChatInterface(
-        respond,
-        examples=[
-            ["I feel overwhelmed with work."],
-            ["Can you guide me through a quick meditation?"],
-            ["How do I stop worrying about things I can't control?"],
-            ["What are some DBT skills for managing anxiety?"],
-            ["Can you explain mindfulness in DBT?"],
-            ["I am interested in DBT excercises"],
-            ["I feel restless. Please help me."],
-            ["I have destructive thoughts coming to my mind repetatively."]
-        ],
-        title='Dialectical Behaviour Therapy Assistant👩‍⚕️🧘‍♀️'
-    )
+demo = gr.ChatInterface(
+    respond,
+    additional_inputs=[
+        gr.Textbox(value="Welcome to the Tech Innovation Consultant!", label="System message"),
+        gr.Slider(minimum=1, maximum=2048, value=512, step=1, label="Max new tokens"),
+        gr.Slider(minimum=0.1, maximum=4.0, value=0.7, step=0.1, label="Temperature"),
+        gr.Slider(
+            minimum=0.1,
+            maximum=1.0,
+            value=0.95,
+            step=0.05,
+            label="Top-p (nucleus sampling)",
+        ),
+    ],
+    examples=[
+        ["What are the latest trends in artificial intelligence?"],
+        ["Can you explain blockchain technology?"],
+        ["How can businesses leverage IoT for growth?"],
+        ["What are some innovative uses of machine learning in healthcare?"],
+        ["How can startups implement a successful digital transformation strategy?"],
+        ["What are the key components of a technology innovation roadmap?"],
+        ["How does 5G technology impact the future of telecommunications?"],
+        ["Can you recommend strategies for cybersecurity in IoT devices?"],
+        ["How can AI optimize supply chain management?"],
+        ["What are the advantages of cloud computing for businesses?"],
+        ["How can companies innovate through data analytics?"],
+    ],
+    title='Tech Innovation Consultant'
+)
 
 if __name__ == "__main__":
     demo.launch()
