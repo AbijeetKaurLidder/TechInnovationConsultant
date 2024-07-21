@@ -1,4 +1,4 @@
-Tech Innovation Consultant Chatbot
+Tech Innovation Consultant 
 
 A guideline to build a no-cost LLM chatbot
 
